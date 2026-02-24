@@ -25,26 +25,7 @@ const LINE_HEIGHT = 20;
 const LYRICS_OFFSET = window.innerHeight / 3.5;
 
 let lastLyric = -1
-/*
-function mainDivScalePosition(width, height) {
-    // width: 1280, height: 720 (Image loaded)
-    // width: 325, height: 437 (Image unloaded)
-    const scaleX = mainDiv.clientWidth / width;
-    const scaleY = mainDiv.clientHeight / height;
-    const scale = Math.max(scaleX, scaleY);
 
-    mainDiv.style.transform = `scale(${scale})`;
-    mainDiv.style.top = `calc(50% - ${mainDiv.clientHeight / 2}px)`;
-    mainDiv.style.left = `calc(50% - ${mainDiv.clientWidth / 2}px)`;
-
-    rightContent.style.paddingLeft = `${10 / scaleX}%`;
-}
-
-window.addEventListener("resize", () => {
-    mainDivScalePosition(width, height);
-});
-mainDivScalePosition(width, height);
-*/
 let bgImg = new Image();
 bgImg.src = "./default.svg";
 let playing = false;
@@ -59,36 +40,15 @@ let audioLoaded = false;
 let lrcLoaded = false;
 
 svgcontainer.addEventListener("click", async () => {
-    // const filePaths = await window.electron.openDialog();
-    // if (filePaths && filePaths.length > 0) {
-    //     // 处理选中的文件
-    //     for (const filePath of filePaths) {
-    //         const file = new File([await fetch(filePath).then(r => r.blob())], filePath.split('/').pop());
-    //         const event = { target: { files: [file] } };
-    //         audioFileInput.dispatchEvent(new CustomEvent('change', { detail: event }));
-    //     }
-    // }
     audioFileInput.click();
 });
 
 audioPlayer.addEventListener("loadedmetadata", () => {
     endTime.textContent = `-${formatTime(audioPlayer.duration)}`;
-    // if (imageLoaded && audioLoaded && lrcLoaded) {
-    //     setTimeout(() => {
-    //         playBtn.click();
-    //     }, 100);
-    // } else if (!lrcLoaded && imageLoaded && audioLoaded) {
-    //     window.dispatchEvent(new Event("resize"));
-    //     setTimeout(() => {
-    //         playBtn.click();
-    //     }, 100);
-    // }
     if (audioLoaded) {
         if (!lrcLoaded) {
             width = 325;
             height = 437;
-            // window.dispatchEvent(new Event("resize"));
-            // mainDiv.style.marginLeft = "0";
         }
         playBtn.click();
     } else {
@@ -214,7 +174,6 @@ audioPlayer.addEventListener("timeupdate", () => {
         process.style.width = `${(audioPlayer.currentTime / audioPlayer.duration) * 100}%`;
         startTime.textContent = formatTime(audioPlayer.currentTime);
         endTime.textContent = `-${formatTime(audioPlayer.duration - audioPlayer.currentTime)}`;
-        // 歌词触发计算
         const cTime = audioPlayer.currentTime;
 
         let lList = [];
@@ -319,124 +278,16 @@ function parseLrc(lrcText) {
         }
     });
 
-    //mainDivScalePosition(width, height);
-
     return {
         lyrics: lrcArray,
         allTimes: allTimes
     };
 }
-/*
-function updateLyrics() {
-    if (!playing) return;
 
-    const currentTime = audioPlayer.currentTime;
-    const lyricLines = lyricsElement.querySelectorAll('*');
-    if (called) {
-        lyricsElement.style.transition = "all 1s cubic-bezier(0.25, 0.8, 0.25, 1)";
-    } else {
-        centerActiveLine(lyricLines[0]);
-    }
-    let activeIndex = -1;
-
-    for (let i = 0; i < lyrics.length; i++) {
-        if (currentTime >= lyrics[i].time) {
-            activeIndex = i;
-        } else {
-            break;
-        }
-    }
-
-    lyricLines.forEach((line, index) => {
-        const distance = Math.abs(activeIndex - index);
-        const thisTime = allTimes[activeIndex];
-
-        if (distance > 8) {
-            line.style.visibility = "hidden";
-            return;
-        }
-
-        if (index === activeIndex) {
-            applyActiveLineStyle(line, index, lyricLines, thisTime);
-        } else {
-            applyNearbyLineStyle(line, distance);
-        }
-    });
-
-    if (activeIndex >= 0) {
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                centerActiveLine(lyricLines[activeIndex]);
-            }, 120);
-        });
-    }
-
-    requestAnimationFrame(updateLyrics);
-}
-
-function applyActiveLineStyle(line, index, allLines, thisTime) {
-    void line.offsetWidth;
-    setTimeout(() => {
-        line.classList.add("highlight");
-        line.style.filter = "none";
-        line.style.marginLeft = "0";
-        line.style.visibility = "visible";
-        line.style.opacity = "0.6";
-        line.style.setProperty("--type-time", `${thisTime / 2}s`);
-    }, 300);
-
-    if (!processedLines.has(index)) {
-        processedLines.add(index);
-
-        const start = Math.max(0, index - 3);
-        const end = Math.min(allLines.length - 1, index + 3);
-        const displayingLines = Array.from(allLines).slice(start, end + 1);
-
-        displayingLines.forEach((nline, i) => {
-            setTimeout(() => {
-                nline.style.marginTop = `${line.clientHeight}px`;
-
-                setTimeout(() => {
-                    nline.style.marginTop = "4%";
-                }, 250);
-            }, i * 75);
-        });
-    }
-}
-
-function applyNearbyLineStyle(line, distance) {
-    void line.offsetWidth;
-    line.classList.remove("highlight");
-    line.style.filter = `blur(${distance * 0.5}px)`;
-    line.style.marginLeft = `${distance * 1.25}px`;
-    line.style.opacity = `${0.3 - distance / 100}`;
-    line.style.visibility = "visible";
-}
-
-function centerActiveLine(activeLine) {
-    if (!activeLine) return;
-    if (!called) called = true;
-
-    const container = document.querySelector(".lyricscontainer");
-    const containerHeight = container.clientHeight;
-    const activeLineOffset = activeLine.offsetTop;
-    const offset = (containerHeight / 2) - activeLineOffset - (0.1 * containerHeight);
-
-    lyricsElement.style.transform = `translateY(${offset}px)`;
-}
-*/
 audioPlayer.addEventListener('play', () => {
     //requestAnimationFrame(updateLyrics);
 });
-/*
-window.addEventListener('resize', () => {
-    lyricsElement.classList.add("noTransition");
-    updateLyrics();
-    lyricsElement.classList.remove("noTransition");
-});
 
-updateLyrics();
-*/
 function getDominantColors(imageData, colorCount = 4, minColorDistance = 60) {
     const pixels = imageData.data;
     const { width, height } = imageData;
@@ -621,4 +472,211 @@ function UpdateLyricsLayout(index, data, init = 1) {
             data[i].ele.style.transform = `translateY(${position}px)`;
         }, (n * 70 - n * 10) * init);
     }
+}
+
+// ========== 搜索框功能（点击触发） ==========
+const searchContainer = document.getElementById('search_container');
+const searchTrigger = document.getElementById('search_trigger');
+const searchDropdown = document.getElementById('search_dropdown');
+const searchInput = document.getElementById('search_input');
+const searchResults = document.getElementById('search_results');
+
+let searchKeyword = '';          // 当前搜索关键词
+let searchResultList = [];       // 缓存搜索结果
+
+// 点击触发器切换显示
+searchTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    searchDropdown.classList.toggle('hidden');
+});
+
+// 点击其他区域关闭
+document.addEventListener('click', (e) => {
+    if (!searchContainer.contains(e.target)) {
+        searchDropdown.classList.add('hidden');
+    }
+});
+
+// 防止点击搜索框内部关闭事件冒泡
+searchDropdown.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+
+// ESC 键关闭
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        searchDropdown.classList.add('hidden');
+    }
+});
+
+// 输入防抖
+let searchTimer;
+searchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    const keyword = e.target.value.trim();
+    if (keyword === '') {
+        searchResults.innerHTML = '';
+        return;
+    }
+    searchTimer = setTimeout(() => {
+        performSearch(keyword);
+    }, 400);
+});
+
+// 执行搜索（酷我API）
+async function performSearch(keyword) {
+    searchKeyword = keyword;
+    searchResults.innerHTML = '<div class="search-loading">搜索中...</div>';
+    try {
+        const url = `https://oiapi.net/api/Kuwo?msg=${encodeURIComponent(keyword)}&limit=10`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.code === 1 && data.data && data.data.length > 0) {
+            searchResultList = data.data;
+            renderSearchResults(data.data);
+        } else {
+            searchResults.innerHTML = '<div class="search-no-result">未找到相关歌曲</div>';
+        }
+    } catch (err) {
+        console.error('搜索失败', err);
+        searchResults.innerHTML = '<div class="search-error">搜索出错，请重试</div>';
+    }
+}
+
+// 渲染搜索结果
+function renderSearchResults(results) {
+    let html = '';
+    results.forEach((item, index) => {
+        html += `
+            <div class="search-result-item" data-index="${index}">
+                <span class="song-name">${escapeHtml(item.song)}</span>
+                <span class="artist-name">${escapeHtml(item.singer)}</span>
+            </div>
+        `;
+    });
+    searchResults.innerHTML = html;
+
+    // 为每个结果绑定点击事件
+    document.querySelectorAll('.search-result-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+            const index = e.currentTarget.dataset.index;
+            playSelectedSong(index);
+        });
+    });
+}
+
+// 简单的转义（防止XSS）
+function escapeHtml(unsafe) {
+    return unsafe.replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+    });
+}
+
+// 播放选中的歌曲
+async function playSelectedSong(index) {
+    const item = searchResultList[index];
+    if (!item) return;
+
+    // 显示加载状态
+    audioName.textContent = `加载中...`;
+
+    try {
+        // 1. 获取歌曲详细（包含播放URL）
+        // 使用原始关键词 + n 参数获取该歌曲的详细信息
+        const detailUrl = `https://oiapi.net/api/Kuwo?msg=${encodeURIComponent(searchKeyword)}&n=${Number(index)+1}`;
+        const detailRes = await fetch(detailUrl);
+        const detailData = await detailRes.json();
+
+        // 根据返回格式提取url（可能是data.url或data[0].url）
+        let audioUrl = '';
+        if (detailData.code === 1) {
+            if (Array.isArray(detailData.data)) {
+                audioUrl = detailData.data[0]?.url;
+            } else if (typeof detailData.data === 'object') {
+                audioUrl = detailData.data?.url;
+            }
+        }
+
+        if (!audioUrl) {
+            throw new Error('无法获取播放链接');
+        }
+
+        // 2. 设置音频源
+        audioPlayer.src = audioUrl;
+        audioLoaded = true;
+
+        // 3. 更新封面
+        if (item.picture && item.picture !== 'https://h5s.kuwo.cn/www/kw-www/img/logo.ce08bf7.png') {
+            bgImg.src = item.picture;
+        } else {
+            // 使用默认背景
+            bgImg.src = './default.svg';
+        }
+
+        // 4. 更新歌曲名显示
+        let displayName = item.song;
+        if (item.singer) displayName += ` - ${item.singer}`;
+        audioName.textContent = displayName.length > 40 ? displayName.substring(0, 40) + '...' : displayName;
+
+        // 5. 获取歌词（使用歌词API）
+        fetchLyricBySongName(item.song, item.singer).then(lyric => {
+            if (lyric) {
+                processLrcText(lyric);
+            } else {
+                // 无歌词时清空显示
+                lyricsElement.innerHTML = '';
+                lrcLoaded = false;
+                disableLyric();
+            }
+        }).catch(() => {
+            disableLyric();
+        });
+
+        // 可选：自动播放
+        setTimeout(() => {
+            if (audioPlayer.readyState >= 2) {
+                playBtn.click();
+            }
+        }, 500);
+
+    } catch (err) {
+        console.error('播放失败', err);
+        alert('无法加载歌曲，请稍后重试');
+    }
+}
+
+// ========== 歌词API（QQ音乐源） ==========
+const API_BASE = 'https://api.wuhy.de5.net';
+
+async function searchSongmid(keyword) {
+    const url = `${API_BASE}/getSearchByKey?key=${encodeURIComponent(keyword)}&limit=1`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const songList = data?.response?.data?.song?.list;
+    if (songList && songList.length > 0) {
+        return songList[0].songmid;
+    }
+    return null;
+}
+
+async function getLyric(songmid) {
+    const url = `${API_BASE}/getLyric?songmid=${encodeURIComponent(songmid)}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return data?.response?.lyric || '';
+}
+
+async function fetchLyricBySongName(title, artist) {
+    const keyword = `${title} ${artist}`;
+    const songmid = await searchSongmid(keyword);
+    if (!songmid) {
+        console.warn('未找到歌词');
+        return '';
+    }
+    const lyric = await getLyric(songmid);
+    return lyric;
 }
