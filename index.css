@@ -335,7 +335,7 @@ p {
     background-color: #000;
 }
 
-/* ========== 搜索框样式（已调整尺寸与风格） ========== */
+/* 搜索框样式,能看就行 */
 #search_container {
     position: fixed;
     top: 20px;

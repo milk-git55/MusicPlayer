@@ -431,7 +431,7 @@ bgImg.onload = () => {
     animate();
 };
 
-// 新增的函数
+
 
 // 动态计算布局的函数
 function GetLyricsLayout(now, to, data) {
@@ -474,15 +474,15 @@ function UpdateLyricsLayout(index, data, init = 1) {
     }
 }
 
-// ========== 搜索框功能（点击触发） ==========
+// 搜索框功能
 const searchContainer = document.getElementById('search_container');
 const searchTrigger = document.getElementById('search_trigger');
 const searchDropdown = document.getElementById('search_dropdown');
 const searchInput = document.getElementById('search_input');
 const searchResults = document.getElementById('search_results');
 
-let searchKeyword = '';          // 当前搜索关键词
-let searchResultList = [];       // 缓存搜索结果
+let searchKeyword = '';          
+let searchResultList = [];       
 
 // 点击触发器切换显示
 searchTrigger.addEventListener('click', (e) => {
@@ -497,7 +497,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 防止点击搜索框内部关闭事件冒泡
+
 searchDropdown.addEventListener('click', (e) => {
     e.stopPropagation();
 });
@@ -523,7 +523,7 @@ searchInput.addEventListener('input', (e) => {
     }, 400);
 });
 
-// 执行搜索（酷我API）
+// 执行搜索
 async function performSearch(keyword) {
     searchKeyword = keyword;
     searchResults.innerHTML = '<div class="search-loading">搜索中...</div>';
@@ -543,7 +543,7 @@ async function performSearch(keyword) {
     }
 }
 
-// 渲染搜索结果
+
 function renderSearchResults(results) {
     let html = '';
     results.forEach((item, index) => {
@@ -556,7 +556,7 @@ function renderSearchResults(results) {
     });
     searchResults.innerHTML = html;
 
-    // 为每个结果绑定点击事件
+    // 点击事件
     document.querySelectorAll('.search-result-item').forEach(el => {
         el.addEventListener('click', (e) => {
             const index = e.currentTarget.dataset.index;
@@ -565,7 +565,7 @@ function renderSearchResults(results) {
     });
 }
 
-// 简单的转义（防止XSS）
+// XSS
 function escapeHtml(unsafe) {
     return unsafe.replace(/[&<>"]/g, function(m) {
         if (m === '&') return '&amp;';
@@ -576,22 +576,22 @@ function escapeHtml(unsafe) {
     });
 }
 
-// 播放选中的歌曲
+// 播放歌曲
 async function playSelectedSong(index) {
     const item = searchResultList[index];
     if (!item) return;
 
-    // 显示加载状态
+    // 加载状态
     audioName.textContent = `加载中...`;
 
     try {
-        // 1. 获取歌曲详细（包含播放URL）
+        // 获取歌曲详细
         // 使用原始关键词 + n 参数获取该歌曲的详细信息
         const detailUrl = `https://oiapi.net/api/Kuwo?msg=${encodeURIComponent(searchKeyword)}&n=${Number(index)+1}`;
         const detailRes = await fetch(detailUrl);
         const detailData = await detailRes.json();
 
-        // 根据返回格式提取url（可能是data.url或data[0].url）
+        // 提取url
         let audioUrl = '';
         if (detailData.code === 1) {
             if (Array.isArray(detailData.data)) {
@@ -605,24 +605,24 @@ async function playSelectedSong(index) {
             throw new Error('无法获取播放链接');
         }
 
-        // 2. 设置音频源
+       
         audioPlayer.src = audioUrl;
         audioLoaded = true;
 
-        // 3. 更新封面
+        // 更新封面
         if (item.picture && item.picture !== 'https://h5s.kuwo.cn/www/kw-www/img/logo.ce08bf7.png') {
             bgImg.src = item.picture;
         } else {
-            // 使用默认背景
+            // 默认背景
             bgImg.src = './default.svg';
         }
 
-        // 4. 更新歌曲名显示
+        // 更新歌曲名显示
         let displayName = item.song;
         if (item.singer) displayName += ` - ${item.singer}`;
         audioName.textContent = displayName.length > 40 ? displayName.substring(0, 40) + '...' : displayName;
 
-        // 5. 获取歌词（使用歌词API）
+        // 获取歌词
         fetchLyricBySongName(item.song, item.singer).then(lyric => {
             if (lyric) {
                 processLrcText(lyric);
@@ -636,7 +636,7 @@ async function playSelectedSong(index) {
             disableLyric();
         });
 
-        // 可选：自动播放
+        // 自动播放
         setTimeout(() => {
             if (audioPlayer.readyState >= 2) {
                 playBtn.click();
@@ -649,7 +649,7 @@ async function playSelectedSong(index) {
     }
 }
 
-// ========== 歌词API（QQ音乐源） ==========
+// 歌词API,QQ音乐源
 const API_BASE = 'https://api.wuhy.de5.net';
 
 async function searchSongmid(keyword) {
