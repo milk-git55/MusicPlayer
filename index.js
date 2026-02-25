@@ -28,6 +28,10 @@ let lastLyric = -1
 
 let bgImg = new Image();
 bgImg.src = "./default.svg";
+
+// 初始状态：无文件输入，收起右侧区域并使左侧内容居中显示默认封面/按钮/标题
+document.body.classList.add('no-files');
+
 let playing = false;
 let isDragging = false;
 let lrcData;
@@ -59,6 +63,11 @@ audioPlayer.addEventListener("loadedmetadata", () => {
 audioFileInput.addEventListener("change", async (event) => {
     const files = event.target.files;
     if (files.length === 0) return;
+
+    // 选择文件后展开右侧并触发左侧非线性移动动画
+    requestAnimationFrame(() => {
+        document.body.classList.remove('no-files');
+    });
 
     for (const file of files) {
         const fileURL = URL.createObjectURL(file);

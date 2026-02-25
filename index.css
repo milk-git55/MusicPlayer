@@ -180,6 +180,36 @@ p {
     width: 55vw;
 }
 
+/* 没有选中文件时收缩右侧，左侧占满页面 */
+body.no-files .rightcontent {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+    transition: width 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.no-files .leftcontent {
+    width: 100vw;
+    transition: width 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateX(0);
+}
+
+/* 选择文件后展开右侧，左侧向左移动 */
+body:not(.no-files) .rightcontent {
+    width: 55vw;
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body:not(.no-files) .leftcontent {
+    width: 50vw;
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 微调svg容器过渡，使封面在移动时显得平滑 */
+.svgcontainer {
+    transition: all 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .lyricscontainer {
     height: 100vh;
     position: relative;
